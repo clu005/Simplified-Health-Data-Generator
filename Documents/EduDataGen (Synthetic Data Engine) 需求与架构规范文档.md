@@ -25,25 +25,29 @@
 
 ## **2\. 系统分层架构**
 
-│                 交互式控制台菜单 (Interactive TUI)            │    
-│   (主菜单状态机: 新建蓝图 / 离线渲染 / 数据埋雷 / 资产管理)       │    
+│              前端 / 静态 HTML 手动测试页面 (Static Tester Web UI)       │
+│               (REST API 接口调用 / 蓝图创建 / 数据生成与预览)            │
                                │    
                                ▼  
 
-│            1\. Blueprint Generator (Gemini API)              │    
-│   • 语义解析与领域逻辑推理                                    │    
-│   • 确定生理基线 (Baseline) 与病理偏移 (Delta Shifts)          │    
-│   • 定义疾病罹患概率分布与严重度随机区间 (Severity Models)     │    
-│   • 计算非线性衰减权重与物理边界 (Limits)                     │    
-│   • 规划教学埋雷策略 (Anomalies)                             │    
+│                      Web API 层 (EduDataGen.WebAPI)                    │
+│   • REST Controllers (BlueprintsController, DatasetsController 等)     │
+│   • 静态文件服务 (Hosting index.html 手动测试页面)                    │
+
+                               │
+                               ▼
+
+│                 1\. ConnectedService 层 (Gemini API 等)               │
+│   • 语义解析与领域逻辑推理 (Gemini Structured Outputs)                  │
+│   • 调用 LLM 编译生成 Simulation Blueprint JSON                        │
    
-                               │  输出并持久化落盘    
+                               │  通过 DAL 持久化落盘
                                ▼    
 │          Simulation Blueprint JSON (./blueprints/\*.json)     │    
-                               │  载入引擎    
+                               │  引擎载入
                                ▼  
 
-│               2\. C\# Math Engine Runtime (.NET)              │    
+│               2\. Engine 算术与业务逻辑层 (EduDataGen.Engine)          │
 │   • Seed 伪随机数发生器 (PRNG)                               │    
 │   • 随机分流：健康 vs 患病概率投掷 (Health Status Roll)       │    
 │   • 条件激活与严重度采样 (Severity Factor Generator)          │    
@@ -53,16 +57,12 @@
 
                                │    
                                ▼    
-│                      3\. 双表导出层 (Exporters)               │    
+│                   3\. DAL 数据访问层 (EduDataGen.DAL)                 │
+│   • 双表 CSV 导出与读取 (Features CSV & Ground Truth CSV)              │
+│   • 本地磁盘工作区 IO & Blueprint 存储管理                           │
 │                                                             │    
 │   \[学生数据靶场\]                  \[教师真值答案\]              │    
 │   ./datasets/\*\_features.csv      ./datasets/\*\_ground\_truth.csv  │    
-│   • Patient\_ID                   • Patient\_ID               │    
-│   • 年龄 / 性别                  • Is\_Patient (布尔值)       │    
-│   • 观测体征 (体温, 血压, 心率)  • Active\_Conditions (病症名)│    
-│   • 生化指标 (血糖等)            • Severity\_Scores (严重度)  │    
-│   • 脏数据埋雷                   • Primary\_Diagnosis (主诊断)│    
-│   (拖入 CODAP / Colab)           (用于自动对齐、评分与验证) │    
 3\. Simulation Blueprint 规范标准  
 Simulation Blueprint 是连接 LLM 语义层与 C\# 算术层的核心契约。更新后的标准强化了人群发病率、各病症发生概率与严重度分布的定义。
 
