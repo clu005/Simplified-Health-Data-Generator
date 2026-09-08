@@ -8,7 +8,7 @@ This document defines the C# .NET coding conventions, architectural guidelines, 
 
 ## 2. C# Language & Framework Standards
 
-- **Target Framework**: .NET 8.0 or .NET 9.0 LTS (`net8.0` / `net9.0`).
+- **Target Framework**: .NET 10 (`net10.0`).
 - **Language Version**: C# 12 / C# 13 with all modern language features enabled:
   - File-scoped namespaces (`namespace EduDataGen.Engine.Domain;`).
   - Nullable reference types (`<Nullable>enable</Nullable>`).

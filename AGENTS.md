@@ -2,7 +2,7 @@
 name: edudatagen-agent
 description: Skills, development guidelines, and reference index for AI agents working on EduDataGen synthetic data generation engine.
 license: MIT
-compatibility: Requires .NET 8.0 SDK or .NET 9.0 SDK
+compatibility: Requires .NET 10 SDK
 metadata:
   project: EduDataGen
   version: "1.0"
@@ -17,8 +17,9 @@ This document serves as the primary Agent Skill reference and navigation index f
 ## 1. Environment & Setup Reference
 
 ### Virtual Machine / Dev Environment Setup
-The environment setup script and configuration are managed via standard .NET CLI scripts.
-- **SDK**: .NET 8.0 or .NET 9.0 LTS
+The environment setup script installs and configures .NET 10 and required global tools (`dotnet-ef`, `dotnet-aspnet-codegenerator`, `dotnet-dev-certs`):
+- **Setup Script**: `scripts/setup-env.sh` (Run via `bash scripts/setup-env.sh`)
+- **SDK Target**: .NET 10 (`net10.0`)
 - **Build Command**: `dotnet build`
 - **Test Command**: `dotnet test`
 - **Run Web API**: `dotnet run --project src/EduDataGen.WebAPI`

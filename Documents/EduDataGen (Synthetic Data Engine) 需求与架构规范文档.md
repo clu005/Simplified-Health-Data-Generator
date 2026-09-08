@@ -10,7 +10,7 @@
 
 * **编译与执行分离（Compiler-Runtime Separation）**：  
   * **LLM（Gemini API）作为“领域架构师 / 编译器”**：负责理解自然语言需求，调动医学与跨学科知识库，输出严谨合规的 **Simulation Blueprint（仿真蓝图 JSON）**。  
-  * **C\# (.NET 8/9) 作为“确定性数学执行引擎 / 运行时”**：纯本地离线解析蓝图，执行高斯采样、多层随机发病判定、非线性衰减算法、生理边界截断（Clamping）与教学埋雷注入，极速输出 CSV/JSON。  
+  * **C\# (.NET 10) 作为“确定性数学执行引擎 / 运行时”**：纯本地离线解析蓝图，执行高斯采样、多层随机发病判定、非线性衰减算法、生理边界截断（Clamping）与教学埋雷注入，极速输出 CSV/JSON。
 * **多层级随机发病与严重度模型（Multi-Tier Stochastic Pathogenesis）**：  
   * 并非人人皆病：样本按独立随机概率划分为“完全健康基准人群”与“患病人群”。  
   * 个体差异化表型：每个病人患有的病症组合不同，且每种病症的严重程度（Severity）通过独立随机数确定并线性/非线性缩放生理偏移量。  
@@ -378,7 +378,7 @@ CRITICAL CONSTRAINTS:
 
 ## **9\. 技术栈与依赖选型**
 
-* **运行时**：.NET 8.0 / .NET 9.0 LTS (C\# 12 / 13\)  
+* **运行时**：.NET 10 (C\# 12 / 13 / 14\)
 * **控制台 TUI & 状态机**：Spectre.Console（用于交互式选择菜单、动态表格渲染、状态机循环与加载动画）  
 * **LLM 集成**：Google\_GenerativeAI 官方 SDK 或轻量 REST HttpClient（用于与 Gemini 1.5 Pro / Flash 进行 Structured Outputs 交互）  
 * **JSON 序列化与 Schema 验证**：System.Text.Json \+ Json.NET.Schema
@@ -412,7 +412,7 @@ CRITICAL CONSTRAINTS:
 
 * **Compiler-Runtime Separation**:  
   * **LLM (Gemini API) as "Domain Architect / Compiler"**: Responsible for understanding natural language requirements, leveraging medical and interdisciplinary knowledge bases, and outputting rigorous, compliant **Simulation Blueprints (JSON)**.  
-  * **C\# (.NET 8/9) as "Deterministic Mathematical Execution Engine / Runtime"**: Performs local, offline parsing of blueprints, executing Gaussian sampling, multi-layer stochastic pathogenesis determination, non-linear attenuation algorithms, physiological boundary clamping (Clamping), and pedagogical trap injection, outputting CSV/JSON at high speed.  
+  * **C\# (.NET 10) as "Deterministic Mathematical Execution Engine / Runtime"**: Performs local, offline parsing of blueprints, executing Gaussian sampling, multi-layer stochastic pathogenesis determination, non-linear attenuation algorithms, physiological boundary clamping (Clamping), and pedagogical trap injection, outputting CSV/JSON at high speed.
 * **Multi-Tier Stochastic Pathogenesis Model**:  
   * Populations are divided into "Baseline Healthy Population" and "Patient Population" based on independent random probabilities.  
   * Individualized phenotypes: Each patient has a unique combination of conditions, and the severity of each condition is determined by independent random numbers, linearly/non-linearly scaling physiological offsets.  
@@ -745,7 +745,7 @@ Upon first run, the program initializes a standard workspace:
 
 ## **9\. Technology Stack and Dependencies**
 
-* **Runtime**: .NET 8.0 / .NET 9.0 LTS (C\# 12 / 13\)  
+* **Runtime**: .NET 10 (C\# 12 / 13 / 14\)
 * **TUI & State Machine**: Spectre.Console  
 * **LLM Integration**: Google\_GenerativeAI SDK  
 * **JSON Serialization**: System.Text.Json \+ Json.NET.Schema  
