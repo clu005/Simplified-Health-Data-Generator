@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EduDataGen.ConnectedService/EduDataGen.ConnectedService.csproj" />
+    <Project Path="src/EduDataGen.DAL/EduDataGen.DAL.csproj" />
+    <Project Path="src/EduDataGen.Engine/EduDataGen.Engine.csproj" />
+    <Project Path="src/EduDataGen.Tests/EduDataGen.Tests.csproj" />
+    <Project Path="src/EduDataGen.WebAPI/EduDataGen.WebAPI.csproj" />
+  </Folder>
+</Solution>

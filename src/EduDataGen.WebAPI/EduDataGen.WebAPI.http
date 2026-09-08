@@ -1,0 +1,6 @@
+@EduDataGen.WebAPI_HostAddress = http://localhost:5007
+
+GET {{EduDataGen.WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
