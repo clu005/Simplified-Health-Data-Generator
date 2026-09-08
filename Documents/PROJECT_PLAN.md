@@ -35,7 +35,7 @@ This document serves as the **living project tracker** for the overall software 
 │ • Built-in Presets (Medical Triage, Soccer, Growth Curves)   │
 │ • CODAP & Google Colab Integration Guide                    │
 │ • CI/CD GitHub Actions & Repository Release                 │
-└─────────────────────────────────────────────────────────────┘
+└──────────────────────────────┬──────────────────────────────┘
 ```
 
 ---
@@ -45,19 +45,19 @@ This document serves as the **living project tracker** for the overall software 
 ### Phase 1: Core Engine, DAL & Web API Foundation (MVP)
 | Task ID | Component | Task Description | Status | Target Deliverable |
 | :--- | :--- | :--- | :---: | :--- |
-| **P1-01** | `Solution` | Initialize 5-project C# solution (`DAL`, `Engine`, `ConnectedService`, `WebAPI`, `Tests`) | ⏳ Backlog | `EduDataGen.sln` |
-| **P1-02** | `DAL` | Implement Workspace Disk Initializer (`blueprints/`, `presets/`, `datasets/`, `configs/`) | ⏳ Backlog | `WorkspaceManager.cs` |
-| **P1-03** | `DAL` | Implement Blueprint JSON Repository (Load/Save Simulation Blueprints) | ⏳ Backlog | `BlueprintRepository.cs` |
-| **P1-04** | `DAL` | Implement Dual-Table CSV Exporters via `CsvHelper` (RFC 4180 + UTF-8 with BOM) | ⏳ Backlog | `DualTableCsvExporter.cs` |
-| **P1-05** | `Engine` | Implement Domain Entities & JSON Blueprint Schema Models | ⏳ Backlog | `Domain/` models |
-| **P1-06** | `Engine` | Implement Seeded PRNG & Box-Muller Gaussian Distribution Sampler | ⏳ Backlog | `GaussianSampler.cs` |
-| **P1-07** | `Engine` | Implement 3-Tier Stochastic Pathogenesis Pipeline (Cohort roll -> Condition roll -> Severity) | ⏳ Backlog | `StochasticPipeline.cs` |
-| **P1-08** | `Engine` | Implement Non-Linear Attenuated Accumulator ($\gamma = 0.35$) & Priority Override | ⏳ Backlog | `AttenuatedAccumulator.cs` |
-| **P1-09** | `Engine` | Implement Physiological Boundary Clamping (HardMin / HardMax) | ⏳ Backlog | `PhysiologicalClamper.cs` |
-| **P1-10** | `WebAPI` | Implement `BlueprintsController` (Get all, Get by ID, Save blueprint) | ⏳ Backlog | `BlueprintsController.cs` |
-| **P1-11** | `WebAPI` | Implement `DatasetsController` (Render dual-table CSVs offline) | ⏳ Backlog | `DatasetsController.cs` |
-| **P1-12** | `Tests` | Write xUnit tests for PRNG determinism, 3-tier pipeline, and math formulas | ⏳ Backlog | `EngineTests/` |
-| **P1-13** | `Tests` | Write xUnit tests for DAL CSV serialization & workspace I/O | ⏳ Backlog | `DalTests/` |
+| **P1-01** | `Solution` | Initialize 5-project C# solution (`DAL`, `Engine`, `ConnectedService`, `WebAPI`, `Tests`) | ✅ Completed | `EduDataGen.sln` |
+| **P1-02** | `DAL` | Implement Workspace Disk Initializer (`blueprints/`, `presets/`, `datasets/`, `configs/`) | ✅ Completed | `WorkspaceManager.cs` |
+| **P1-03** | `DAL` | Implement Blueprint JSON Repository (Load/Save Simulation Blueprints) | ✅ Completed | `BlueprintRepository.cs` |
+| **P1-04** | `DAL` | Implement Dual-Table CSV Exporters via `CsvHelper` (RFC 4180 + UTF-8 with BOM) | ✅ Completed | `DualTableCsvExporter.cs` |
+| **P1-05** | `Engine` | Implement Domain Entities & JSON Blueprint Schema Models | ✅ Completed | `Domain/` models |
+| **P1-06** | `Engine` | Implement Seeded PRNG & Box-Muller Gaussian Distribution Sampler | ✅ Completed | `GaussianSampler.cs` |
+| **P1-07** | `Engine` | Implement 3-Tier Stochastic Pathogenesis Pipeline (Cohort roll -> Condition roll -> Severity) | ✅ Completed | `StochasticPipeline.cs` |
+| **P1-08** | `Engine` | Implement Non-Linear Attenuated Accumulator ($\gamma = 0.35$) & Priority Override | ✅ Completed | `AttenuatedAccumulator.cs` |
+| **P1-09** | `Engine` | Implement Physiological Boundary Clamping (HardMin / HardMax) | ✅ Completed | `PhysiologicalClamper.cs` |
+| **P1-10** | `WebAPI` | Implement `BlueprintsController` (Get all, Get by ID, Save blueprint) | ✅ Completed | `BlueprintsController.cs` |
+| **P1-11** | `WebAPI` | Implement `DatasetsController` (Render dual-table CSVs offline) | ✅ Completed | `DatasetsController.cs` |
+| **P1-12** | `Tests` | Write xUnit tests for PRNG determinism, 3-tier pipeline, and math formulas | ✅ Completed | `EngineTests/` |
+| **P1-13** | `Tests` | Write xUnit tests for DAL CSV serialization & workspace I/O | ✅ Completed | `DalTests/` |
 
 ---
 

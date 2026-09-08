@@ -66,9 +66,34 @@ public class DualTableCsvExporter : IDualTableCsvExporter
 
     private static async Task WriteCsvFileAsync<T>(string filePath, IEnumerable<T> records)
     {
-        // Write UTF-8 with BOM explicitly for Excel/CODAP compatibility
         using var writer = new StreamWriter(filePath, false, new UTF8Encoding(true));
         using var csv = new CsvWriter(writer, CsvConfig);
-        await csv.WriteRecordsAsync(records);
+
+        if (records is IEnumerable<IDictionary<string, object?>> dictRecords)
+        {
+            var list = dictRecords.ToList();
+            if (list.Count > 0)
+            {
+                var keys = list[0].Keys.ToList();
+                foreach (var key in keys)
+                {
+                    csv.WriteField(key);
+                }
+                await csv.NextRecordAsync();
+
+                foreach (var dict in list)
+                {
+                    foreach (var key in keys)
+                    {
+                        csv.WriteField(dict.TryGetValue(key, out var val) ? val : null);
+                    }
+                    await csv.NextRecordAsync();
+                }
+            }
+        }
+        else
+        {
+            await csv.WriteRecordsAsync(records);
+        }
     }
 }
