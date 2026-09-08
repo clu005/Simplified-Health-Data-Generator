@@ -10,7 +10,7 @@
 
 * **编译与执行分离（Compiler-Runtime Separation）**：  
   * **LLM（Gemini API）作为“领域架构师 / 编译器”**：负责理解自然语言需求，调动医学与跨学科知识库，输出严谨合规的 **Simulation Blueprint（仿真蓝图 JSON）**。  
-  * **C\# (.NET 8/9) 作为“确定性数学执行引擎 / 运行时”**：纯本地离线解析蓝图，执行高斯采样、多层随机发病判定、非线性衰减算法、生理边界截断（Clamping）与教学埋雷注入，极速输出 CSV/JSON。  
+  * **C\# (.NET 10) 作为“确定性数学执行引擎 / 运行时”**：纯本地离线解析蓝图，执行高斯采样、多层随机发病判定、非线性衰减算法、生理边界截断（Clamping）与教学埋雷注入，极速输出 CSV/JSON。
 * **多层级随机发病与严重度模型（Multi-Tier Stochastic Pathogenesis）**：  
   * 并非人人皆病：样本按独立随机概率划分为“完全健康基准人群”与“患病人群”。  
   * 个体差异化表型：每个病人患有的病症组合不同，且每种病症的严重程度（Severity）通过独立随机数确定并线性/非线性缩放生理偏移量。  
@@ -25,25 +25,29 @@
 
 ## **2\. 系统分层架构**
 
-│                 交互式控制台菜单 (Interactive TUI)            │    
-│   (主菜单状态机: 新建蓝图 / 离线渲染 / 数据埋雷 / 资产管理)       │    
+│              前端 / 静态 HTML 手动测试页面 (Static Tester Web UI)       │
+│               (REST API 接口调用 / 蓝图创建 / 数据生成与预览)            │
                                │    
                                ▼  
 
-│            1\. Blueprint Generator (Gemini API)              │    
-│   • 语义解析与领域逻辑推理                                    │    
-│   • 确定生理基线 (Baseline) 与病理偏移 (Delta Shifts)          │    
-│   • 定义疾病罹患概率分布与严重度随机区间 (Severity Models)     │    
-│   • 计算非线性衰减权重与物理边界 (Limits)                     │    
-│   • 规划教学埋雷策略 (Anomalies)                             │    
+│                      Web API 层 (EduDataGen.WebAPI)                    │
+│   • REST Controllers (BlueprintsController, DatasetsController 等)     │
+│   • 静态文件服务 (Hosting index.html 手动测试页面)                    │
+
+                               │
+                               ▼
+
+│                 1\. ConnectedService 层 (Gemini API 等)               │
+│   • 语义解析与领域逻辑推理 (Gemini Structured Outputs)                  │
+│   • 调用 LLM 编译生成 Simulation Blueprint JSON                        │
    
-                               │  输出并持久化落盘    
+                               │  通过 DAL 持久化落盘
                                ▼    
 │          Simulation Blueprint JSON (./blueprints/\*.json)     │    
-                               │  载入引擎    
+                               │  引擎载入
                                ▼  
 
-│               2\. C\# Math Engine Runtime (.NET)              │    
+│               2\. Engine 算术与业务逻辑层 (EduDataGen.Engine)          │
 │   • Seed 伪随机数发生器 (PRNG)                               │    
 │   • 随机分流：健康 vs 患病概率投掷 (Health Status Roll)       │    
 │   • 条件激活与严重度采样 (Severity Factor Generator)          │    
@@ -53,16 +57,12 @@
 
                                │    
                                ▼    
-│                      3\. 双表导出层 (Exporters)               │    
+│                   3\. DAL 数据访问层 (EduDataGen.DAL)                 │
+│   • 双表 CSV 导出与读取 (Features CSV & Ground Truth CSV)              │
+│   • 本地磁盘工作区 IO & Blueprint 存储管理                           │
 │                                                             │    
 │   \[学生数据靶场\]                  \[教师真值答案\]              │    
 │   ./datasets/\*\_features.csv      ./datasets/\*\_ground\_truth.csv  │    
-│   • Patient\_ID                   • Patient\_ID               │    
-│   • 年龄 / 性别                  • Is\_Patient (布尔值)       │    
-│   • 观测体征 (体温, 血压, 心率)  • Active\_Conditions (病症名)│    
-│   • 生化指标 (血糖等)            • Severity\_Scores (严重度)  │    
-│   • 脏数据埋雷                   • Primary\_Diagnosis (主诊断)│    
-│   (拖入 CODAP / Colab)           (用于自动对齐、评分与验证) │    
 3\. Simulation Blueprint 规范标准  
 Simulation Blueprint 是连接 LLM 语义层与 C\# 算术层的核心契约。更新后的标准强化了人群发病率、各病症发生概率与严重度分布的定义。
 
@@ -378,7 +378,7 @@ CRITICAL CONSTRAINTS:
 
 ## **9\. 技术栈与依赖选型**
 
-* **运行时**：.NET 8.0 / .NET 9.0 LTS (C\# 12 / 13\)  
+* **运行时**：.NET 10 (C\# 12 / 13 / 14\)
 * **控制台 TUI & 状态机**：Spectre.Console（用于交互式选择菜单、动态表格渲染、状态机循环与加载动画）  
 * **LLM 集成**：Google\_GenerativeAI 官方 SDK 或轻量 REST HttpClient（用于与 Gemini 1.5 Pro / Flash 进行 Structured Outputs 交互）  
 * **JSON 序列化与 Schema 验证**：System.Text.Json \+ Json.NET.Schema
@@ -412,7 +412,7 @@ CRITICAL CONSTRAINTS:
 
 * **Compiler-Runtime Separation**:  
   * **LLM (Gemini API) as "Domain Architect / Compiler"**: Responsible for understanding natural language requirements, leveraging medical and interdisciplinary knowledge bases, and outputting rigorous, compliant **Simulation Blueprints (JSON)**.  
-  * **C\# (.NET 8/9) as "Deterministic Mathematical Execution Engine / Runtime"**: Performs local, offline parsing of blueprints, executing Gaussian sampling, multi-layer stochastic pathogenesis determination, non-linear attenuation algorithms, physiological boundary clamping (Clamping), and pedagogical trap injection, outputting CSV/JSON at high speed.  
+  * **C\# (.NET 10) as "Deterministic Mathematical Execution Engine / Runtime"**: Performs local, offline parsing of blueprints, executing Gaussian sampling, multi-layer stochastic pathogenesis determination, non-linear attenuation algorithms, physiological boundary clamping (Clamping), and pedagogical trap injection, outputting CSV/JSON at high speed.
 * **Multi-Tier Stochastic Pathogenesis Model**:  
   * Populations are divided into "Baseline Healthy Population" and "Patient Population" based on independent random probabilities.  
   * Individualized phenotypes: Each patient has a unique combination of conditions, and the severity of each condition is determined by independent random numbers, linearly/non-linearly scaling physiological offsets.  
@@ -745,7 +745,7 @@ Upon first run, the program initializes a standard workspace:
 
 ## **9\. Technology Stack and Dependencies**
 
-* **Runtime**: .NET 8.0 / .NET 9.0 LTS (C\# 12 / 13\)  
+* **Runtime**: .NET 10 (C\# 12 / 13 / 14\)
 * **TUI & State Machine**: Spectre.Console  
 * **LLM Integration**: Google\_GenerativeAI SDK  
 * **JSON Serialization**: System.Text.Json \+ Json.NET.Schema  
