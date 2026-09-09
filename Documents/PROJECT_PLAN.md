@@ -64,13 +64,13 @@ This document serves as the **living project tracker** for the overall software 
 ### Phase 2: AI Blueprint Compiler, Traps Studio & Manual Tester Web UI
 | Task ID | Component | Task Description | Status | Target Deliverable |
 | :--- | :--- | :--- | :---: | :--- |
-| **P2-01** | `Connected` | Implement Google Gemini REST API Client with Structured Outputs JSON Schema | ⏳ Backlog | `GeminiBlueprintCompiler.cs` |
-| **P2-02** | `WebAPI` | Implement AI Blueprint compilation endpoint (`POST /api/blueprints/generate-ai`) | ⏳ Backlog | `BlueprintsController.cs` |
-| **P2-03** | `Engine` | Implement Pedagogical Anomaly Injector (Outliers, Missing Values, Typo Inconsistencies) | ⏳ Backlog | `PedagogicalTrapInjector.cs` |
-| **P2-04** | `WebAPI` | Implement `TrapsController` (`POST /api/datasets/inject-traps`) | ⏳ Backlog | `TrapsController.cs` |
-| **P2-05** | `WebAPI` | Implement Static File Server & `wwwroot/index.html` Single-Page Manual Tester UI | ⏳ Backlog | `wwwroot/index.html` |
-| **P2-06** | `WebAPI` | Implement `AssetsController` (Browse & side-by-side preview Features vs Ground Truth) | ⏳ Backlog | `AssetsController.cs` |
-| **P2-07** | `Tests` | Integration tests for Web API controllers and Gemini compiler mock | ⏳ Backlog | `WebApiTests/` |
+| **P2-01** | `Connected` | Implement Google Gemini REST API Client with Structured Outputs JSON Schema | ✅ Completed | `GeminiBlueprintCompiler.cs` |
+| **P2-02** | `WebAPI` | Implement AI Blueprint compilation endpoint (`POST /api/blueprints/generate-ai`) | ✅ Completed | `BlueprintsController.cs` |
+| **P2-03** | `Engine` | Implement Pedagogical Anomaly Injector (Outliers, Missing Values, Typo Inconsistencies) | ✅ Completed | `PedagogicalTrapInjector.cs` |
+| **P2-04** | `WebAPI` | Implement `TrapsController` (`POST /api/datasets/inject-traps`) | ✅ Completed | `TrapsController.cs` |
+| **P2-05** | `WebAPI` | Implement Static File Server & `wwwroot/index.html` Single-Page Manual Tester UI | ✅ Completed | `wwwroot/index.html` |
+| **P2-06** | `WebAPI` | Implement `AssetsController` (Browse & side-by-side preview Features vs Ground Truth) | ✅ Completed | `AssetsController.cs` |
+| **P2-07** | `Tests` | Integration tests for Web API controllers and Gemini compiler mock | ✅ Completed | `WebApiTests/` |
 
 ---
 
