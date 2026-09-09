@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduDataGen - Phase 2 Manual Tester UI</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 20px; background: #f8f9fa; color: #212529; }
+        h1, h2, h3 { color: #0d6efd; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { background: #ffffff; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 0.9em; }
+        input[type="text"], input[type="number"], textarea, select { width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; }
+        textarea { height: 70px; resize: vertical; }
+        button { background: #0d6efd; color: white; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-weight: 600; margin-top: 8px; }
+        button:hover { background: #0b5ed7; }
+        .output-box { background: #212529; color: #00ff66; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 13px; max-height: 350px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        th, td { border: 1px solid #dee2e6; padding: 6px 8px; text-align: left; }
+        th { background: #e9ecef; }
+        .tables-row { display: flex; gap: 10px; overflow-x: auto; }
+        .table-container { flex: 1; min-width: 300px; }
+    </style>
+</head>
+<body>
+    <h1>EduDataGen - Phase 2 Manual Tester Workbench</h1>
+    <p>Synthetic Data Generation Engine for K-12 AI & Data Science Education</p>
+
+    <div class="grid">
+        <!-- 1. AI Blueprint Compiler -->
+        <div class="card">
+            <h2>1. 🌟 AI Blueprint Compiler (Gemini API)</h2>
+            <div class="form-group">
+                <label>Scenario Prompt</label>
+                <textarea id="aiPrompt" placeholder="e.g. 10-15 year old teenager emergency triage data including heatstroke and asthma"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Seed (Optional)</label>
+                <input type="number" id="aiSeed" value="2026">
+            </div>
+            <div class="form-group">
+                <label>Total Records (Optional)</label>
+                <input type="number" id="aiRecords" value="100">
+            </div>
+            <div class="form-group">
+                <label>Healthy Ratio (Optional, 0.0 - 1.0)</label>
+                <input type="number" step="0.1" id="aiHealthyRatio" value="0.4">
+            </div>
+            <button onclick="generateAiBlueprint()">Generate AI Blueprint</button>
+        </div>
+
+        <!-- 2. Blueprint Selector & Offline Renderer -->
+        <div class="card">
+            <h2>2. ⚙️ Render Dataset (Dual-Table CSV)</h2>
+            <div class="form-group">
+                <label>Available Blueprints / Presets</label>
+                <select id="blueprintSelect"></select>
+            </div>
+            <button onclick="loadBlueprints()">Refresh Blueprint List</button>
+            <hr style="margin: 15px 0;">
+            <div class="form-group">
+                <label>Override Total Records (Optional)</label>
+                <input type="number" id="renderRecords" placeholder="Leave empty to use blueprint default">
+            </div>
+            <div class="form-group">
+                <label>Override Seed (Optional)</label>
+                <input type="number" id="renderSeed" placeholder="Leave empty to use blueprint default">
+            </div>
+            <button onclick="renderDataset()">Render Features & Ground Truth CSVs</button>
+        </div>
+
+        <!-- 3. Pedagogical Trap Studio -->
+        <div class="card">
+            <h2>3. 🧪 Pedagogical Trap Studio</h2>
+            <div class="form-group">
+                <label>Source Features CSV File Name</label>
+                <input type="text" id="trapSourceFile" placeholder="e.g. medical-triage_20260329_120000_features.csv">
+            </div>
+            <div class="form-group">
+                <label>Target File Name (Optional)</label>
+                <input type="text" id="trapTargetFile" placeholder="e.g. medical-triage_corrupted_features.csv">
+            </div>
+            <div class="form-group">
+                <label>Missing Value Rate (0.0 - 1.0)</label>
+                <input type="number" step="0.01" id="trapMissingRate" value="0.05">
+            </div>
+            <div class="form-group">
+                <label>Outlier Rule Field (e.g. Body_Temp_C)</label>
+                <input type="text" id="outlierField" placeholder="Body_Temp_C">
+            </div>
+            <div class="form-group">
+                <label>Outlier Value & Count</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="outlierValue" placeholder="Value (e.g. 99.0)">
+                    <input type="number" id="outlierCount" placeholder="Count (e.g. 2)" value="2">
+                </div>
+            </div>
+            <button onclick="injectTraps()">Inject Traps into Features CSV</button>
+        </div>
+
+        <!-- 4. Asset Explorer -->
+        <div class="card">
+            <h2>4. 📂 Asset Manager & Preview</h2>
+            <button onclick="loadAssets()">List Local Datasets</button>
+            <div class="form-group" style="margin-top:10px;">
+                <label>Select Features File for Preview</label>
+                <select id="assetSelect" onchange="previewSelectedAsset()"></select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Output & Preview Section -->
+    <div class="card" style="margin-top: 20px;">
+        <h2>Response & Side-by-Side Preview Area</h2>
+        <div id="outputLog" class="output-box">Ready. Execute an action above to view results...</div>
+
+        <div id="previewContainer" style="margin-top: 20px; display: none;">
+            <h3>Side-by-Side Data Preview (Features vs Ground Truth)</h3>
+            <div class="tables-row">
+                <div class="table-container">
+                    <h4 style="color: #0d6efd;">Features Table (<span id="featuresFileName"></span>)</h4>
+                    <div style="overflow-x: auto;" id="featuresTableArea"></div>
+                </div>
+                <div class="table-container">
+                    <h4 style="color: #198754;">Ground Truth Table (<span id="gtFileName"></span>)</h4>
+                    <div style="overflow-x: auto;" id="gtTableArea"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function logOutput(obj) {
+            const el = document.getElementById("outputLog");
+            el.textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
+        }
+
+        async function loadBlueprints() {
+            try {
+                const res = await fetch("/api/blueprints");
+                const data = await res.json();
+                logOutput(data);
+
+                const select = document.getElementById("blueprintSelect");
+                select.innerHTML = "";
+
+                if (data.blueprints) {
+                    data.blueprints.forEach(b => {
+                        const opt = document.createElement("option");
+                        opt.value = b;
+                        opt.textContent = `[Custom] ${b}`;
+                        select.appendChild(opt);
+                    });
+                }
+                if (data.presets) {
+                    data.presets.forEach(p => {
+                        const opt = document.createElement("option");
+                        opt.value = p;
+                        opt.textContent = `[Preset] ${p}`;
+                        select.appendChild(opt);
+                    });
+                }
+            } catch (err) {
+                logOutput({ error: err.message });
+            }
+        }
+
+        async function generateAiBlueprint() {
+            const prompt = document.getElementById("aiPrompt").value.trim();
+            if (!prompt) {
+                alert("Please enter a scenario prompt.");
+                return;
+            }
+            logOutput("Sending request to AI Blueprint Compiler...");
+            try {
+                const body = {
+                    prompt: prompt,
+                    seed: parseInt(document.getElementById("aiSeed").value) || null,
+                    totalRecords: parseInt(document.getElementById("aiRecords").value) || null,
+                    healthyRatio: parseFloat(document.getElementById("aiHealthyRatio").value) || null
+                };
+                const res = await fetch("/api/blueprints/generate-ai", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                logOutput(data);
+                await loadBlueprints();
+            } catch (err) {
+                logOutput({ error: err.message });
+            }
+        }
+
+        async function renderDataset() {
+            const selected = document.getElementById("blueprintSelect").value;
+            if (!selected) {
+                alert("Please select a blueprint first.");
+                return;
+            }
+            logOutput("Rendering dataset...");
+            try {
+                const body = {
+                    blueprintFileName: selected,
+                    overrideTotalRecords: parseInt(document.getElementById("renderRecords").value) || null,
+                    overrideSeed: parseInt(document.getElementById("renderSeed").value) || null
+                };
+                const res = await fetch("/api/datasets/render", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                logOutput(data);
+                await loadAssets();
+            } catch (err) {
+                logOutput({ error: err.message });
+            }
+        }
+
+        async function injectTraps() {
+            const source = document.getElementById("trapSourceFile").value.trim();
+            if (!source) {
+                alert("Please enter source features CSV file name.");
+                return;
+            }
+            logOutput("Injecting pedagogical traps...");
+            try {
+                const outliers = [];
+                const field = document.getElementById("outlierField").value.trim();
+                const val = document.getElementById("outlierValue").value.trim();
+                const count = parseInt(document.getElementById("outlierCount").value) || 0;
+                if (field && val && count > 0) {
+                    outliers.push({ field: field, value: val, count: count });
+                }
+
+                const body = {
+                    sourceFileName: source,
+                    targetFileName: document.getElementById("trapTargetFile").value.trim() || null,
+                    anomalies: {
+                        missingValueRate: parseFloat(document.getElementById("trapMissingRate").value) || 0,
+                        outliers: outliers
+                    }
+                };
+
+                const res = await fetch("/api/datasets/inject-traps", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                logOutput(data);
+                await loadAssets();
+            } catch (err) {
+                logOutput({ error: err.message });
+            }
+        }
+
+        async function loadAssets() {
+            try {
+                const res = await fetch("/api/assets/datasets");
+                const data = await res.json();
+                logOutput(data);
+
+                const select = document.getElementById("assetSelect");
+                select.innerHTML = "<option value=''>-- Select Features CSV to Preview --</option>";
+
+                if (data.files) {
+                    data.files.filter(f => f.isFeatures).forEach(f => {
+                        const opt = document.createElement("option");
+                        opt.value = f.fileName;
+                        opt.textContent = f.fileName;
+                        select.appendChild(opt);
+                    });
+                }
+            } catch (err) {
+                logOutput({ error: err.message });
+            }
+        }
+
+        async function previewSelectedAsset() {
+            const file = document.getElementById("assetSelect").value;
+            if (!file) return;
+
+            document.getElementById("trapSourceFile").value = file;
+            logOutput(`Loading preview for ${file}...`);
+
+            try {
+                const res = await fetch(`/api/assets/datasets/preview?featuresFile=${encodeURIComponent(file)}&limit=10`);
+                const data = await res.json();
+                logOutput(data);
+
+                if (data.features || data.groundTruth) {
+                    document.getElementById("previewContainer").style.display = "block";
+                    document.getElementById("featuresFileName").textContent = data.featuresFile || "N/A";
+                    document.getElementById("gtFileName").textContent = data.groundTruthFile || "N/A";
+
+                    renderTable("featuresTableArea", data.features);
+                    renderTable("gtTableArea", data.groundTruth);
+                }
+            } catch (err) {
+                logOutput({ error: err.message });
+            }
+        }
+
+        function renderTable(containerId, records) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+
+            if (!records || records.length === 0) {
+                container.innerHTML = "<em>No records found.</em>";
+                return;
+            }
+
+            const headers = Object.keys(records[0]);
+            let html = "<table><thead><tr>";
+            headers.forEach(h => html += `<th>${h}</th>`);
+            html += "</tr></thead><tbody>";
+
+            records.forEach(row => {
+                html += "<tr>";
+                headers.forEach(h => {
+                    const val = row[h] !== null && row[h] !== undefined ? row[h] : "";
+                    html += `<td>${val}</td>`;
+                });
+                html += "</tr>";
+            });
+
+            html += "</tbody></table>";
+            container.innerHTML = html;
+        }
+
+        window.onload = function() {
+            loadBlueprints();
+            loadAssets();
+        };
+    </script>
+</body>
+</html>

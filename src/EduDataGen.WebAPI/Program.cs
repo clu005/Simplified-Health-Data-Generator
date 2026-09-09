@@ -1,3 +1,4 @@
+using EduDataGen.ConnectedService.Gemini;
 using EduDataGen.DAL.Exporters;
 using EduDataGen.DAL.Repositories;
 using EduDataGen.DAL.Workspace;
@@ -5,6 +6,7 @@ using EduDataGen.Engine;
 using EduDataGen.Engine.Clamping;
 using EduDataGen.Engine.Math;
 using EduDataGen.Engine.Pipeline;
+using EduDataGen.Engine.Traps;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
+
+// Register ConnectedService
+builder.Services.AddHttpClient<IGeminiBlueprintCompiler, GeminiBlueprintCompiler>();
 
 // Register DAL Services
 builder.Services.AddSingleton<IWorkspaceManager, WorkspaceManager>();
@@ -22,6 +27,7 @@ builder.Services.AddSingleton<IDualTableCsvExporter, DualTableCsvExporter>();
 builder.Services.AddTransient<IStochasticPipeline, StochasticPipeline>();
 builder.Services.AddTransient<IAttenuatedAccumulator, AttenuatedAccumulator>();
 builder.Services.AddTransient<IPhysiologicalClamper, PhysiologicalClamper>();
+builder.Services.AddTransient<IPedagogicalTrapInjector, PedagogicalTrapInjector>();
 builder.Services.AddTransient<IDatasetGenerator, DatasetGenerator>();
 
 var app = builder.Build();
@@ -37,6 +43,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseAuthorization();
 

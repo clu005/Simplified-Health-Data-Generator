@@ -1,3 +1,4 @@
+using EduDataGen.ConnectedService.Gemini;
 using EduDataGen.DAL.Models;
 using EduDataGen.DAL.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -67,4 +68,59 @@ public class BlueprintsController : ControllerBase
             blueprint
         });
     }
+
+    /// <summary>
+    /// Generates a new blueprint using Gemini AI compiler and auto-saves it to workspace.
+    /// </summary>
+    [HttpPost("generate-ai")]
+    public async Task<IActionResult> GenerateAiBlueprint(
+        [FromBody] GenerateAiBlueprintRequest request,
+        [FromServices] IGeminiBlueprintCompiler compiler)
+    {
+        if (request == null || string.IsNullOrWhiteSpace(request.Prompt))
+        {
+            return BadRequest(new { error = "Prompt is required to generate an AI blueprint." });
+        }
+
+        try
+        {
+            var blueprint = await compiler.CompileBlueprintAsync(
+                request.Prompt,
+                request.Seed,
+                request.TotalRecords,
+                request.HealthyRatio,
+                request.MissingValueRate);
+
+            string fileName = $"{blueprint.Scenario}_{blueprint.Seed}.json";
+            await _repository.SaveBlueprintAsync(blueprint, fileName);
+
+            return Ok(new
+            {
+                message = "AI Blueprint generated and saved successfully.",
+                fileName,
+                blueprint
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (HttpRequestException ex)
+        {
+            return StatusCode(502, new { error = $"External Gemini API error: {ex.Message}" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = $"An error occurred during AI blueprint generation: {ex.Message}" });
+        }
+    }
+}
+
+public class GenerateAiBlueprintRequest
+{
+    public string Prompt { get; set; } = string.Empty;
+    public int? Seed { get; set; }
+    public int? TotalRecords { get; set; }
+    public double? HealthyRatio { get; set; }
+    public double? MissingValueRate { get; set; }
 }
